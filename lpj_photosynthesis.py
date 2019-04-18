@@ -113,7 +113,7 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     # units: umol m-2 s-1
     An = A - Rd
 
-    return ( A, An, je, jc )
+    return An
 
 def vmax(temp, apar, c1, c2, tscal):
     # Calculation of non-water-stressed rubisco capacity assuming leaf nitrogen
@@ -213,14 +213,9 @@ if __name__ == "__main__":
         # Eqn 4, Haxeltine & Prentice 1996a
         apar = par[i] * fpar
 
-        (A[i], An[i],
-         je[i], jc[i]) = photosynthesis(tair[i], apar, co2, lambdax, vm)
+        An[i] = photosynthesis(tair[i], apar, co2, lambdax, vm)
 
-    #print(np.sum(A), np.sum(An))
-    plt.plot(A, label="A")
-    #plt.plot(An, label="An")
-    #plt.plot(je, label="Je")
-    #plt.plot(jc, label="Jc")
+    plt.plot(An, label="An")
     plt.legend(numpoints=1, loc="best")
     #plt.ylabel("Photosynthesis (g C m$^{-2}$ hr$^{-1}$)")
     plt.ylabel("Photosynthesis ($\mathrm{\mu}$mol m$^{-2}$ s$^{-1}$)")
