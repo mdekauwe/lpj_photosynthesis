@@ -17,3 +17,6 @@ pstemp_low = 15.  # approximate lower range of temperature optimum for
 pstemp_high = 25. # approximate upper range of temperature optimum for
                   # photosynthesis (deg C)
 pstemp_max = 38.  # maximum temperature limit for photosynthesis (deg C)
+
+lat = 44.
+lon = -120.0

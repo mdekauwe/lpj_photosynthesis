@@ -8,6 +8,7 @@ Blah, blah
 from math import exp
 import numpy as np
 import sys
+import matplotlib.pyplot as plt
 
 import parameters as p
 import constants as c
@@ -72,7 +73,8 @@ def photosynthesis(temp, apar, co2, day_length, lambdax):
     # Calculation of C2_C3, Eqn 6, Haxeltine & Prentice 1996a
     c2 = (pi_co2 - gamma_star) / (pi_co2 + kc * (1.0 + p.p02 / ko))
 
-    vm = vmax(temp, apar, day_length, c1, c2, tscal)
+    #vm = vmax(temp, apar, day_length, c1, c2, tscal)
+    vm = 40.
 
     # Calculation of daily leaf respiration
     # Eqn 10, Haxeltine & Prentice 1996a
@@ -94,8 +96,7 @@ def photosynthesis(temp, apar, co2, day_length, lambdax):
                 np.sqrt((je + jc) * (je + jc) - 4.0 * p.theta * je * jc)) / \
                 (2.0 * p.theta) * day_length
 
-    print(agd_g)
-
+    return agd_g
 
 def vmax(temp, apar, day_length, c1, c2, tscal):
     # Calculation of non-water-stressed rubisco capacity assuming leaf nitrogen
@@ -115,7 +116,7 @@ def vmax(temp, apar, day_length, c1, c2, tscal):
     # Conversion factor in calculation of leaf nitrogen: includes conversion of:
     #   - Vm from gC/m2/day to umolC/m2/sec
     #   - nitrogen from mg/m2 to kg/m2
-    conv = 1.0 / (3600.0 * day_length * c.CMASS)
+    conv = 1.0 / (c.SEC_TO_HR * day_length * c.CMASS)
 
     vm *= conv
 
@@ -159,19 +160,44 @@ def lookup_Q10(q10, base25, temp):
 
 if __name__ == "__main__":
 
-    day_length = 12.0
-    temp = 15.0  # deg C
+    from get_days_met_forcing import get_met_data
+
+    doy = 180.
+    #
+    ## Met data ...
+    #
+    (par, tair, vpd) = get_met_data(p.lat, p.lon, doy)
+
+    par = np.mean(par.reshape(-1, 2), axis=1)
+    par *= 1800.0/par.max()
+    #conv = c.UMOL_TO_J
+    #par *= conv
+    tair = np.mean(tair.reshape(-1, 2), axis=1)
+
+    #day_length = 12.0
+    #temp = 15.0  # deg C
+    #par = 1000.0 * (c.SEC_TO_HR * day_length) # total daily PAR today (J/m2/day)
     co2 = 400.0  # umol mol-1
-    par = 1000.0 * (3600. * day_length) # total daily PAR today (J/m2/day)
+
 
     # ratio of intercellular to ambient partial pressure of CO2
     lambda_max = 0.8
     lambdax = lambda_max
 
-    # Scale fractional PAR absorption at plant projective area level (FPAR) to
-    # fractional absorption at leaf level (APAR)
-    # Eqn 4, Haxeltine & Prentice 1996a
     fpar = 0.6
-    apar = par * fpar;
 
-    photosynthesis(temp, apar, co2, day_length, lambdax)
+    # In sub-daily mode daylength should be 24h, to obtain values in daily units
+    day_length = 24.
+    a = np.zeros(len(par))
+    for i in range(len(par)):
+
+        # Scale fractional PAR absorption at plant projective area level (FPAR)
+        # to fractional absorption at leaf level (APAR)
+        # Eqn 4, Haxeltine & Prentice 1996a
+        apar = par[i] * fpar;
+
+        a[i] = photosynthesis(tair[i], apar, co2, day_length, lambdax)
+
+    print(np.sum(a))
+    plt.plot(a)
+    plt.show()
