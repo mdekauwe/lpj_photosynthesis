@@ -180,8 +180,8 @@ if __name__ == "__main__":
     lambda_max = 0.8
     lambdax = lambda_max
 
-    # umol m-2 s-1 -> g m-2 h-1
-    vm = 40. * c.CMASS * c.SEC_TO_HR
+    # umol m-2 s-1 -> g m-2 d-1
+    vm = 40. * c.CMASS * c.SEC_TO_DAY
 
     fpar = 0.6
 

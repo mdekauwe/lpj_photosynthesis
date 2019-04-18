@@ -4,6 +4,7 @@ K2degC = 273.15 # Kelvin to deg c conversion
 CMASS = 12.0 # atomic mass of carbon
 
 SEC_TO_HR = 3600.0
+SEC_TO_DAY = 86400.0
 J_TO_UMOL = 4.6
 UMOL_TO_J = 1.0 / J_TO_UMOL
 
