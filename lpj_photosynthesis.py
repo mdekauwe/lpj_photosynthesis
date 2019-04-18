@@ -35,6 +35,7 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     # for CO2 with increasing temperature
     # (Table 3.7, Larcher 1983)
     tscal = calc_temp_inhibition(temp)
+    #tscal = 1.0
 
     # Kinetic parameters (Kc, Ko & tau) are modelled using a Q10 reln
 
@@ -56,7 +57,6 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     gamma_star = p.O2 / 2.0 / tau
 
     print(tau, ko, kc)
-
 
     ko = p.ko25 * p.q10ko**((temp - 25.0) / 10.0)
     kc = p.kc25 * p.q10kc**((temp - 25.0) / 10.0)
@@ -92,13 +92,13 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
 
     # PAR-limited photosynthesis rate
     # Eqn 3, Haxeltine & Prentice 1996a
-    # units: g c m-2 hr-1
-    je = c1 * (p.PATMOS * c.CO2_CONV )* tscal * apar  #* c.CMASS #* c.CQ
+    # units: umol m-2 s-1
+    je = c1 * (p.PATMOS * c.CO2_CONV) * tscal * apar  #* c.CMASS #* c.CQ
 
     # Rubisco-activity limited photosynthesis rate
     # Eqn 5, Haxeltine & Prentice 1996a
     # units: umol m-2 s-1
-    jc = c2 * (p.PATMOS * c.CO2_CONV ) * vm #* c.CMASS
+    jc = c2 * (p.PATMOS * c.CO2_CONV) * vm #* c.CMASS
 
     # Gross photosynthesis, A
     # Eqn 2, Haxeltine & Prentice 1996a
