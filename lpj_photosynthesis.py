@@ -78,26 +78,29 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
 
     # Calculation of daily leaf respiration
     # Eqn 10, Haxeltine & Prentice 1996a
+    # units: g c m-2 d-1
     rd_g = vm * p.BC3
 
-    # PAR-limited photosynthesis rate (gC/m2/h)
+    # PAR-limited photosynthesis rate
     # Eqn 3, Haxeltine & Prentice 1996a
+    # units: g c m-2 hr-1
     je = c1 * tscal * apar * c.CMASS * c.CQ
 
-    # Rubisco-activity limited photosynthesis rate (gC/m2/h)
+    # Rubisco-activity limited photosynthesis rate
     # Eqn 5, Haxeltine & Prentice 1996a
+    # units: g c m-2 hr-1
     jc = c2 * vm
 
     # Calculation of daily gross photosynthesis
     # Eqn 2, Haxeltine & Prentice 1996a
     # Notes: - there is an error in Eqn 2, Haxeltine & Prentice 1996a (missing
     # 			theta in 4*theta*je*jc term) which is fixed here
-    # g c m-2 h-1
-    an = (je + jc - \
+    # units: g c m-2 hr-1
+    a = (je + jc - \
                 np.sqrt((je + jc) * (je + jc) - 4.0 * p.theta * je * jc)) / \
                 (2.0 * p.theta)
 
-    return ( an, je, jc )
+    return ( a, je, jc )
 
 def vmax(temp, apar, c1, c2, tscal):
     # Calculation of non-water-stressed rubisco capacity assuming leaf nitrogen
@@ -184,7 +187,7 @@ if __name__ == "__main__":
 
     fpar = 0.6
 
-    an = np.zeros(len(par))
+    a = np.zeros(len(par))
     je = np.zeros(len(par))
     jc = np.zeros(len(par))
 
@@ -195,10 +198,10 @@ if __name__ == "__main__":
         # Eqn 4, Haxeltine & Prentice 1996a
         apar = par[i] * fpar;
 
-        an[i], je[i], jc[i] = photosynthesis(tair[i], apar, co2, lambdax, vm)
+        a[i], je[i], jc[i] = photosynthesis(tair[i], apar, co2, lambdax, vm)
 
     #print(np.sum(an))
-    #plt.plot(an, label="An")
+    #plt.plot(a, label="An")
     #plt.plot(je, label="Je")
     plt.plot(jc, label="Jc")
     plt.legend(numpoints=1, loc="best")
