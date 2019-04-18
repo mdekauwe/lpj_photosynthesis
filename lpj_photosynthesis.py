@@ -67,7 +67,7 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     # Intercellular partial pressure of CO2 given stomatal opening
     # Eqn 7, Haxeltine & Prentice 1996a
     # units: Pa
-    pi_co2 = lambdax * co2 * p.PATMOS * c.CO2_CONV
+    pi_co2 = lambdax * co2 * p.patm * c.CO2_CONV
 
     # Calculation of C1_C3, Eqn 4, Haxeltine & Prentice 1996a
 
@@ -93,12 +93,12 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     # PAR-limited photosynthesis rate
     # Eqn 3, Haxeltine & Prentice 1996a
     # units: umol m-2 s-1
-    je = c1 * (p.PATMOS * c.CO2_CONV) * tscal * apar  #* c.CMASS #* c.CQ
+    je = c1 * (p.patm * c.CO2_CONV) * tscal * apar  #* c.CMASS #* c.CQ
 
     # Rubisco-activity limited photosynthesis rate
     # Eqn 5, Haxeltine & Prentice 1996a
     # units: umol m-2 s-1
-    jc = c2 * (p.PATMOS * c.CO2_CONV) * vm #* c.CMASS
+    jc = c2 * (p.patm * c.CO2_CONV) * vm #* c.CMASS
 
     # Gross photosynthesis, A
     # Eqn 2, Haxeltine & Prentice 1996a

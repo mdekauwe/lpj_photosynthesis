@@ -2,7 +2,7 @@
 O2 = 2.09e3#2.09e4
 
 # atmospheric pressure (Pa)
-PATMOS = 1e5
+patm = 1e5
 
 # intrinsic quantum efficiency of CO2 uptake, C3 plants
 alpha_c3 = 0.08
