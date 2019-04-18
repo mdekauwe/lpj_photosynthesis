@@ -171,9 +171,7 @@ if __name__ == "__main__":
     (par, tair, vpd) = get_met_data(p.lat, p.lon, doy)
 
     par = np.mean(par.reshape(-1, 2), axis=1)
-    par *= 1800.0/par.max()
-    #conv = c.UMOL_TO_J
-    #par *= conv
+    par *= 1800.0/par.max() * c.UMOL_TO_J
     tair = np.mean(tair.reshape(-1, 2), axis=1)
 
     #day_length = 12.0
