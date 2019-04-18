@@ -55,10 +55,19 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     # units: Pa
     gamma_star = p.O2 / 2.0 / tau
 
+    print(tau, ko, kc)
+
+
+    ko = p.ko25 * p.q10ko**((temp - 25.0) / 10.0)
+    kc = p.kc25 * p.q10kc**((temp - 25.0) / 10.0)
+    tau = p.tau25 * p.q10tau**((temp - 25.0) / 10.0)
+
+    print(tau, ko, kc)
+    print("\n")
     # Intercellular partial pressure of CO2 given stomatal opening
     # Eqn 7, Haxeltine & Prentice 1996a
     # units: Pa
-    pi_co2 = lambdax * co2 * c.PATMOS * c.CO2_CONV
+    pi_co2 = lambdax * co2 * p.PATMOS * c.CO2_CONV
 
     # Calculation of C1_C3, Eqn 4, Haxeltine & Prentice 1996a
 
@@ -76,7 +85,7 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     if vm is None:
         vm = vmax(temp, apar, c1, c2, tscal)
 
-    # Calculation of daily leaf respiration
+    # Daily leaf respiration
     # Eqn 10, Haxeltine & Prentice 1996a
     # units: umol m-2 s-1
     Rd = vm * p.BC3
@@ -84,22 +93,24 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     # PAR-limited photosynthesis rate
     # Eqn 3, Haxeltine & Prentice 1996a
     # units: g c m-2 hr-1
-    je = c1 * tscal * apar  #* c.CMASS #* c.CQ
+    je = c1 * (p.PATMOS * c.CO2_CONV )* tscal * apar  #* c.CMASS #* c.CQ
 
     # Rubisco-activity limited photosynthesis rate
     # Eqn 5, Haxeltine & Prentice 1996a
-    # units: g c m-2 hr-1
-    jc = c2 * vm #* c.CMASS
+    # units: umol m-2 s-1
+    jc = c2 * (p.PATMOS * c.CO2_CONV ) * vm #* c.CMASS
 
-    # Calculation of daily gross photosynthesis
+    # Gross photosynthesis, A
     # Eqn 2, Haxeltine & Prentice 1996a
     # Notes: - there is an error in Eqn 2, Haxeltine & Prentice 1996a (missing
     # 			theta in 4*theta*je*jc term) which is fixed here
-    # units: g c m-2 hr-1
+    # units: umol m-2 s-1
     A = (je + jc - \
                 np.sqrt((je + jc) * (je + jc) - 4.0 * p.theta * je * jc)) / \
                 (2.0 * p.theta)
 
+    # Net photosynthesis, An
+    # units: umol m-2 s-1
     An = A - Rd
 
     return ( A, An, je, jc )
@@ -177,15 +188,17 @@ if __name__ == "__main__":
     # Convert PAR to J m-2 hr-1
     par = np.mean(par.reshape(-1, 2), axis=1)
     par *= 1800.0/par.max() #* c.SEC_TO_HR
-    tair = np.mean(tair.reshape(-1, 2), axis=1)
+    #tair = np.mean(tair.reshape(-1, 2), axis=1)
+    #tair = np.ones(len(par)) * 25.
+
     co2 = 400.0  # umol mol-1
 
     # Ratio of intercellular to ambient partial pressure of CO2
-    lambda_max = 0.8
+    lambda_max = 0.7
     lambdax = lambda_max
 
     # Convert Vcmax from umol m-2 s-1 -> g m-2 d-1
-    vm = 40. #* c.SEC_TO_HR #c.SEC_TO_DAY
+    vm = 60. #* c.SEC_TO_HR #c.SEC_TO_DAY
 
     fpar = 0.6
 
@@ -204,12 +217,13 @@ if __name__ == "__main__":
         (A[i], An[i],
          je[i], jc[i]) = photosynthesis(tair[i], apar, co2, lambdax, vm)
 
-    print(np.sum(A), np.sum(An))
+    #print(np.sum(A), np.sum(An))
     plt.plot(A, label="A")
     #plt.plot(An, label="An")
     #plt.plot(je, label="Je")
     #plt.plot(jc, label="Jc")
     plt.legend(numpoints=1, loc="best")
-    plt.ylabel("Photosynthesis (g C m$^{-2}$ hr$^{-1}$)")
+    #plt.ylabel("Photosynthesis (g C m$^{-2}$ hr$^{-1}$)")
+    plt.ylabel("Photosynthesis ($\mathrm{\mu}$mol m$^{-2}$ s$^{-1}$)")
     plt.xlabel("Hour of day")
     plt.show()
