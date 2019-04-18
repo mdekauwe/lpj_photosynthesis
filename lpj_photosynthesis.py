@@ -169,20 +169,16 @@ if __name__ == "__main__":
     #
     (par, tair, vpd) = get_met_data(p.lat, p.lon, doy)
 
+    # PAR needs to be in J m-2 h-1
     par = np.mean(par.reshape(-1, 2), axis=1)
     par *= 1800.0/par.max() * c.UMOL_TO_J * c.SEC_TO_HR
+
     tair = np.mean(tair.reshape(-1, 2), axis=1)
-
-    #day_length = 12.0
-    #temp = 15.0  # deg C
-    #par = 1000.0 * (c.SEC_TO_HR * day_length) # total daily PAR today (J/m2/day)
     co2 = 400.0  # umol mol-1
-
 
     # ratio of intercellular to ambient partial pressure of CO2
     lambda_max = 0.8
     lambdax = lambda_max
-
 
     # umol m-2 s-1 -> g m-2 h-1
     vm = 40. * c.CMASS * c.SEC_TO_HR
