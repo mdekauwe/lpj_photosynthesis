@@ -86,18 +86,18 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
 
     # Rubisco-activity limited photosynthesis rate (gC/m2/h)
     # Eqn 5, Haxeltine & Prentice 1996a
-    jc = c2 * vm 
+    jc = c2 * vm
 
     # Calculation of daily gross photosynthesis
     # Eqn 2, Haxeltine & Prentice 1996a
     # Notes: - there is an error in Eqn 2, Haxeltine & Prentice 1996a (missing
     # 			theta in 4*theta*je*jc term) which is fixed here
     # g c m-2 h-1
-    agd_g = (je + jc - \
+    an = (je + jc - \
                 np.sqrt((je + jc) * (je + jc) - 4.0 * p.theta * je * jc)) / \
                 (2.0 * p.theta)
 
-    return agd_g
+    return ( an, je, jc )
 
 def vmax(temp, apar, c1, c2, tscal):
     # Calculation of non-water-stressed rubisco capacity assuming leaf nitrogen
@@ -184,7 +184,10 @@ if __name__ == "__main__":
 
     fpar = 0.6
 
-    a = np.zeros(len(par))
+    an = np.zeros(len(par))
+    je = np.zeros(len(par))
+    jc = np.zeros(len(par))
+
     for i in range(len(par)):
 
         # Scale fractional PAR absorption at plant projective area level (FPAR)
@@ -192,10 +195,13 @@ if __name__ == "__main__":
         # Eqn 4, Haxeltine & Prentice 1996a
         apar = par[i] * fpar;
 
-        a[i] = photosynthesis(tair[i], apar, co2, lambdax, vm)
+        an[i], je[i], jc[i] = photosynthesis(tair[i], apar, co2, lambdax, vm)
 
-    print(np.sum(a))
-    plt.plot(a)
+    #print(np.sum(an))
+    #plt.plot(an, label="An")
+    #plt.plot(je, label="Je")
+    plt.plot(jc, label="Jc")
+    plt.legend(numpoints=1, loc="best")
     plt.ylabel("Photosynthesis (g C m$^{-2}$ hr$^{-1}$)")
     plt.xlabel("Hour of day")
     plt.show()
