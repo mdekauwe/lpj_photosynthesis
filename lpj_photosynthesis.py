@@ -18,7 +18,7 @@ __version__ = "1.0 (18.04.2019)"
 __email__   = "mdekauwe@gmail.com"
 
 
-def photosynthesis(temp, apar, co2, day_length, lambdax, vm=None):
+def photosynthesis(temp, apar, co2, lambdax, vm=None):
     """
     Total daily gross photosynthesis
 
@@ -74,7 +74,7 @@ def photosynthesis(temp, apar, co2, day_length, lambdax, vm=None):
     c2 = (pi_co2 - gamma_star) / (pi_co2 + kc * (1.0 + p.p02 / ko))
 
     if vm is None:
-        vm = vmax(temp, apar, day_length, c1, c2, tscal)
+        vm = vmax(temp, apar, c1, c2, tscal)
 
     # Calculation of daily leaf respiration
     # Eqn 10, Haxeltine & Prentice 1996a
@@ -82,7 +82,7 @@ def photosynthesis(temp, apar, co2, day_length, lambdax, vm=None):
 
     # PAR-limited photosynthesis rate (gC/m2/h)
     # Eqn 3, Haxeltine & Prentice 1996a
-    je = c1 * tscal * apar * c.CMASS * c.CQ #/ day_length
+    je = c1 * tscal * apar * c.CMASS * c.CQ
 
     # Rubisco-activity limited photosynthesis rate (gC/m2/h)
     # Eqn 5, Haxeltine & Prentice 1996a
@@ -95,11 +95,11 @@ def photosynthesis(temp, apar, co2, day_length, lambdax, vm=None):
     # g c m-2 h-1
     agd_g = (je + jc - \
                 np.sqrt((je + jc) * (je + jc) - 4.0 * p.theta * je * jc)) / \
-                (2.0 * p.theta) #* day_length
+                (2.0 * p.theta)
 
     return agd_g
 
-def vmax(temp, apar, day_length, c1, c2, tscal):
+def vmax(temp, apar, c1, c2, tscal):
     # Calculation of non-water-stressed rubisco capacity assuming leaf nitrogen
     # not limiting (Eqn 11, Haxeltine & Prentice 1996a)
     #
@@ -163,30 +163,27 @@ if __name__ == "__main__":
 
     from get_days_met_forcing import get_met_data
 
-    doy = 180.
     #
     ## Met data ...
     #
+    doy = 180.
     (par, tair, vpd) = get_met_data(p.lat, p.lon, doy)
 
-    # PAR needs to be in J m-2 h-1
+    # Convert PAR to J m-2 hr-1
     par = np.mean(par.reshape(-1, 2), axis=1)
     par *= 1800.0/par.max() * c.UMOL_TO_J * c.SEC_TO_HR
-
     tair = np.mean(tair.reshape(-1, 2), axis=1)
     co2 = 400.0  # umol mol-1
 
-    # ratio of intercellular to ambient partial pressure of CO2
+    # Ratio of intercellular to ambient partial pressure of CO2
     lambda_max = 0.8
     lambdax = lambda_max
 
-    # umol m-2 s-1 -> g m-2 d-1
+    # Convert Vcmax from umol m-2 s-1 -> g m-2 d-1
     vm = 40. * c.CMASS * c.SEC_TO_DAY
 
     fpar = 0.6
 
-    # In sub-daily mode daylength should be 24h, to obtain values in daily units
-    day_length = 24.
     a = np.zeros(len(par))
     for i in range(len(par)):
 
@@ -195,8 +192,10 @@ if __name__ == "__main__":
         # Eqn 4, Haxeltine & Prentice 1996a
         apar = par[i] * fpar;
 
-        a[i] = photosynthesis(tair[i], apar, co2, day_length, lambdax, vm)
+        a[i] = photosynthesis(tair[i], apar, co2, lambdax, vm)
 
     print(np.sum(a))
     plt.plot(a)
+    plt.ylabel("Photosynthesis (g C m$^{-2}$ hr$^{-1}$)")
+    plt.xlabel("Hour of day")
     plt.show()
