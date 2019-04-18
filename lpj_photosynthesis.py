@@ -86,7 +86,7 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
 
     # Rubisco-activity limited photosynthesis rate (gC/m2/h)
     # Eqn 5, Haxeltine & Prentice 1996a
-    jc = c2 * vm #/ 24.0
+    jc = c2 * vm 
 
     # Calculation of daily gross photosynthesis
     # Eqn 2, Haxeltine & Prentice 1996a
