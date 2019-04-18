@@ -67,7 +67,7 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     # Intercellular partial pressure of CO2 given stomatal opening
     # Eqn 7, Haxeltine & Prentice 1996a
     # units: Pa
-    pi_co2 = lambdax * co2 * p.patm * c.CO2_CONV
+    pi_co2 = lambdax * co2 
 
     # Calculation of C1_C3, Eqn 4, Haxeltine & Prentice 1996a
 
@@ -191,7 +191,8 @@ if __name__ == "__main__":
     #tair = np.mean(tair.reshape(-1, 2), axis=1)
     #tair = np.ones(len(par)) * 25.
 
-    co2 = 400.0  # umol mol-1
+    # umol mol-1 to Pa
+    co2 = 400.0 * p.patm * c.CO2_CONV
 
     # Ratio of intercellular to ambient partial pressure of CO2
     lambdax = p.lambda_max
