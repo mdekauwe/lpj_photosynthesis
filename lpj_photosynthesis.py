@@ -78,7 +78,7 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
 
     # Calculation of daily leaf respiration
     # Eqn 10, Haxeltine & Prentice 1996a
-    # units: g c m-2 d-1
+    # units: umol m-2 s-1
     Rd = vm * p.BC3
 
     # PAR-limited photosynthesis rate
