@@ -183,7 +183,7 @@ if __name__ == "__main__":
     lambdax = lambda_max
 
     # Convert Vcmax from umol m-2 s-1 -> g m-2 d-1
-    vm = 40. * c.CMASS * c.SEC_TO_DAY
+    vm = 40. * c.CMASS * c.SEC_TO_HR #c.SEC_TO_DAY
 
     fpar = 0.6
 
@@ -201,9 +201,9 @@ if __name__ == "__main__":
         a[i], je[i], jc[i] = photosynthesis(tair[i], apar, co2, lambdax, vm)
 
     #print(np.sum(an))
-    #plt.plot(a, label="An")
+    plt.plot(a, label="An")
     #plt.plot(je, label="Je")
-    plt.plot(jc, label="Jc")
+    #plt.plot(jc, label="Jc")
     plt.legend(numpoints=1, loc="best")
     plt.ylabel("Photosynthesis (g C m$^{-2}$ hr$^{-1}$)")
     plt.xlabel("Hour of day")
