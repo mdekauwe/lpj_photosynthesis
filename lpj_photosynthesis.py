@@ -18,7 +18,7 @@ __version__ = "1.0 (18.04.2019)"
 __email__   = "mdekauwe@gmail.com"
 
 
-def photosynthesis(temp, apar, co2, lambdax, vm=None):
+def photosynthesis(Tleaf, apar, co2, lambdax, vm=None):
     """
     Total daily gross photosynthesis
 
@@ -34,31 +34,31 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     # modelled by suppression of LUE by decreased relative affinity of rubisco
     # for CO2 with increasing temperature
     # (Table 3.7, Larcher 1983)
-    tscal = calc_temp_inhibition(temp)
+    tscal = calc_temp_inhibition(Tleaf)
     #tscal = 1.0
 
     # Kinetic parameters (Kc, Ko & tau) are modelled using a Q10 reln
 
     # Q10 temperature response of CO2/O2 specificity ratio
     # units: -
-    tau = lookup_Q10(p.q10tau, p.tau25, temp)
+    tau = lookup_Q10(p.q10tau, p.tau25, Tleaf)
 
     # Q10 temperature response of Michaelis constant for O2
     # units: kPa
-    ko = lookup_Q10(p.q10ko, p.ko25, temp)
+    ko = lookup_Q10(p.q10ko, p.ko25, Tleaf)
 
     # Q10 temperature response of Michaelis constant for CO2
     # units: Pa
-    kc = lookup_Q10(p.q10kc, p.kc25, temp)
+    kc = lookup_Q10(p.q10kc, p.kc25, Tleaf)
 
     # Calculate CO2 compensation point (partial pressure)
     # Eqn 8, Haxeltine & Prentice 1996a
     # units: Pa
     gamma_star = p.O2 / 2.0 / tau
 
-    #ko = p.ko25 * p.q10ko**((temp - 25.0) / 10.0)
-    #kc = p.kc25 * p.q10kc**((temp - 25.0) / 10.0)
-    #tau = p.tau25 * p.q10tau**((temp - 25.0) / 10.0)
+    #ko = p.ko25 * p.q10ko**((Tleaf - 25.0) / 10.0)
+    #kc = p.kc25 * p.q10kc**((Tleaf - 25.0) / 10.0)
+    #tau = p.tau25 * p.q10tau**((Tleaf - 25.0) / 10.0)
 
     # Intercellular partial pressure of CO2 given stomatal opening
     # Eqn 7, Haxeltine & Prentice 1996a
@@ -79,7 +79,7 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     c2 = (pi_co2 - gamma_star) / (pi_co2 + kc * (1.0 + p.O2 / ko))
 
     if vm is None:
-        vm = vmax(temp, apar, c1, c2, tscal)
+        vm = vmax(Tleaf, apar, c1, c2, tscal)
 
     # Daily leaf respiration
     # Eqn 10, Haxeltine & Prentice 1996a
