@@ -1,5 +1,8 @@
 # O2 partial pressure (Pa)
-PO2 = 2.09e4
+p02 = 2.09e4
+
+# intrinsic quantum efficiency of CO2 uptake, C3 plants
+alpha_c3 = 0.08
 
 # Parameters common to all temperate trees
 pstemp_min = -2.
