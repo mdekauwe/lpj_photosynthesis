@@ -89,12 +89,12 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     # PAR-limited photosynthesis rate
     # Eqn 3, Haxeltine & Prentice 1996a
     # units: umol m-2 s-1
-    je = c1 * (p.patm * c.CO2_CONV) * tscal * apar  #* c.CMASS #* c.CQ
+    je = c1 * (p.patm * c.CO2_CONV) * tscal * apar
 
     # Rubisco-activity limited photosynthesis rate
     # Eqn 5, Haxeltine & Prentice 1996a
     # units: umol m-2 s-1
-    jc = c2 * (p.patm * c.CO2_CONV) * vm #* c.CMASS
+    jc = c2 * (p.patm * c.CO2_CONV) * vm 
 
     # Gross photosynthesis, A
     # Eqn 2, Haxeltine & Prentice 1996a
