@@ -84,16 +84,17 @@ def photosynthesis(temp, apar, co2, day_length, lambdax):
 
     # PAR-limited photosynthesis rate (gC/m2/h)
     # Eqn 3, Haxeltine & Prentice 1996a
-    je = c1 * tscal * apar * c.CMASS * c.CQ / day_length
+    je = c1 * tscal * apar * c.CMASS * c.CQ #/ day_length
 
     # Rubisco-activity limited photosynthesis rate (gC/m2/h)
     # Eqn 5, Haxeltine & Prentice 1996a
-    jc = c2 * vm / 24.0
+    jc = c2 * vm #/ 24.0
 
     # Calculation of daily gross photosynthesis
     # Eqn 2, Haxeltine & Prentice 1996a
     # Notes: - there is an error in Eqn 2, Haxeltine & Prentice 1996a (missing
     # 			theta in 4*theta*je*jc term) which is fixed here
+    # g c m-2 h-1
     agd_g = (je + jc - \
                 np.sqrt((je + jc) * (je + jc) - 4.0 * p.theta * je * jc)) / \
                 (2.0 * p.theta) * day_length
