@@ -106,8 +106,8 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     # 			theta in 4*theta*je*jc term) which is fixed here
     # units: umol m-2 s-1
     A = (je + jc - \
-                np.sqrt((je + jc) * (je + jc) - 4.0 * p.theta * je * jc)) / \
-                (2.0 * p.theta)
+            np.sqrt((je + jc) * (je + jc) - 4.0 * p.theta * je * jc)) / \
+            (2.0 * p.theta)
 
     # Net photosynthesis, An
     # units: umol m-2 s-1
