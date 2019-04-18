@@ -194,8 +194,7 @@ if __name__ == "__main__":
     co2 = 400.0  # umol mol-1
 
     # Ratio of intercellular to ambient partial pressure of CO2
-    lambda_max = 0.7
-    lambdax = lambda_max
+    lambdax = p.lambda_max
 
     # Convert Vcmax from umol m-2 s-1 -> g m-2 d-1
     vm = 60. #* c.SEC_TO_HR #c.SEC_TO_DAY

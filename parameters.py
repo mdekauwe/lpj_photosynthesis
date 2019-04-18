@@ -13,6 +13,9 @@ BC3 = 0.015
 # colimitation (shape) parameter
 theta = 0.7
 
+# optimal (maximum) lambda in C3 plants
+lambda_max = 0.8
+
 ko25 = 3.0e4   # value of ko at 25 deg C
 kc25 = 30.0    # value of kc at 25 deg C
 tau25 = 2600.0 # value of tau at 25 deg C
