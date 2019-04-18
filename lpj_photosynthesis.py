@@ -41,7 +41,7 @@ def lookup_tau(q10, base25, temp):
     elif temp > Q10_MAXTEMP:
         temp = Q10_MAXTEMP
 
-    i = int((temp - Q10_MINTEMP) / Q10_PRECISION + 0.5)
+    i = int( (temp - Q10_MINTEMP) / Q10_PRECISION + 0.5 )
 
     return ( data[i] )
 
