@@ -41,33 +41,29 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
 
     # Q10 temperature response of CO2/O2 specificity ratio
     # units: -
-    tau = lookup_Q10(0.57, 2600., temp)
+    tau = lookup_Q10(p.q10tau, p.tau25, temp)
 
     # Q10 temperature response of Michaelis constant for O2
     # units: kPa
-    ko = lookup_Q10(1.2, 3.0e4, temp)
+    ko = lookup_Q10(p.q10ko, p.ko25, temp)
 
     # Q10 temperature response of Michaelis constant for CO2
     # units: Pa
-    kc = lookup_Q10(2.1, 30.0, temp)
+    kc = lookup_Q10(p.q10kc, p.kc25, temp)
 
     # Calculate CO2 compensation point (partial pressure)
     # Eqn 8, Haxeltine & Prentice 1996a
     # units: Pa
     gamma_star = p.O2 / 2.0 / tau
 
-    print(tau, ko, kc)
+    #ko = p.ko25 * p.q10ko**((temp - 25.0) / 10.0)
+    #kc = p.kc25 * p.q10kc**((temp - 25.0) / 10.0)
+    #tau = p.tau25 * p.q10tau**((temp - 25.0) / 10.0)
 
-    ko = p.ko25 * p.q10ko**((temp - 25.0) / 10.0)
-    kc = p.kc25 * p.q10kc**((temp - 25.0) / 10.0)
-    tau = p.tau25 * p.q10tau**((temp - 25.0) / 10.0)
-
-    print(tau, ko, kc)
-    print("\n")
     # Intercellular partial pressure of CO2 given stomatal opening
     # Eqn 7, Haxeltine & Prentice 1996a
     # units: Pa
-    pi_co2 = lambdax * co2 
+    pi_co2 = lambdax * co2
 
     # Calculation of C1_C3, Eqn 4, Haxeltine & Prentice 1996a
 
