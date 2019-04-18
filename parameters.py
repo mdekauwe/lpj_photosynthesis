@@ -1,3 +1,6 @@
+lat = -23.575001
+lon = 152.524994
+
 # O2 partial pressure (Pa)
 O2 = 2.09e3#2.09e4
 
@@ -14,7 +17,13 @@ BC3 = 0.015
 theta = 0.7
 
 # optimal (maximum) lambda in C3 plants
-lambda_max = 0.8
+lambda_max = 0.7
+
+# Leaf area index [m2 m-2]
+LAI = 1.5
+
+# light extinction coefficient
+k = 0.5
 
 ko25 = 3.0e4   # value of ko at 25 deg C
 kc25 = 30.0    # value of kc at 25 deg C
@@ -30,6 +39,3 @@ pstemp_low = 15.  # approximate lower range of temperature optimum for
 pstemp_high = 25. # approximate upper range of temperature optimum for
                   # photosynthesis (deg C)
 pstemp_max = 38.  # maximum temperature limit for photosynthesis (deg C)
-
-lat = 44.
-lon = -120.0

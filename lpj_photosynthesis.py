@@ -94,7 +94,7 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     # Rubisco-activity limited photosynthesis rate
     # Eqn 5, Haxeltine & Prentice 1996a
     # units: umol m-2 s-1
-    jc = c2 * (p.patm * c.CO2_CONV) * vm 
+    jc = c2 * (p.patm * c.CO2_CONV) * vm
 
     # Gross photosynthesis, A
     # Eqn 2, Haxeltine & Prentice 1996a
@@ -182,8 +182,8 @@ if __name__ == "__main__":
     (par, tair, vpd) = get_met_data(p.lat, p.lon, doy)
 
     # Convert PAR to J m-2 hr-1
-    par = np.mean(par.reshape(-1, 2), axis=1)
-    par *= 1800.0/par.max() #* c.SEC_TO_HR
+    #par = np.mean(par.reshape(-1, 2), axis=1)
+    #par *= 1800.0/par.max() #* c.SEC_TO_HR
     #tair = np.mean(tair.reshape(-1, 2), axis=1)
     #tair = np.ones(len(par)) * 25.
 
@@ -196,7 +196,7 @@ if __name__ == "__main__":
     # Convert Vcmax from umol m-2 s-1 -> g m-2 d-1
     vm = 60. #* c.SEC_TO_HR #c.SEC_TO_DAY
 
-    fpar = 0.6
+    fpar = 1.0 - np.exp(-p.k * p.LAI)
 
     A = np.zeros(len(par))
     An = np.zeros(len(par))
@@ -214,7 +214,6 @@ if __name__ == "__main__":
 
     plt.plot(An, label="An")
     plt.legend(numpoints=1, loc="best")
-    #plt.ylabel("Photosynthesis (g C m$^{-2}$ hr$^{-1}$)")
     plt.ylabel("Photosynthesis ($\mathrm{\mu}$mol m$^{-2}$ s$^{-1}$)")
     plt.xlabel("Hour of day")
     plt.show()
