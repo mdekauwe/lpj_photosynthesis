@@ -104,14 +104,14 @@ def vmax(temp, apar, day_length, c1, c2, tscal):
     s =  24.0 / day_length * p.BC3
 
     # Calculation of sigma is based on Eqn 12 Haxeltine & Prentice 1996a
-    sigma = np.sqrt(max(0., 1. - (c2 - s) / (c2 - p.theta * s)))
+    sigma = np.sqrt(max(0., 1.0 - (c2 - s) / (c2 - p.theta * s)))
 
     # maximum daily rate of net photosynthesis, g C m-2 d-1
     arg1 = 1.0 / p.BC3
     arg2 = c.CMASS * c.CQ * c1 / c2 * tscal * apar
     arg3 = 2.0 * p.theta * s * (1. - sigma) - s + c2 * sigma
     vm = arg1 * arg2 * arg3
-    
+
     # Conversion factor in calculation of leaf nitrogen: includes conversion of:
     #   - Vm from gC/m2/day to umolC/m2/sec
     #   - nitrogen from mg/m2 to kg/m2
