@@ -74,7 +74,9 @@ def photosynthesis(temp, apar, co2, day_length, lambdax):
     c2 = (pi_co2 - gamma_star) / (pi_co2 + kc * (1.0 + p.p02 / ko))
 
     #vm = vmax(temp, apar, day_length, c1, c2, tscal)
-    vm = 40.
+
+    # umol m-2 s-1 g m-2 h-1
+    vm = 40. * c.CMASS / day_length
 
     # Calculation of daily leaf respiration
     # Eqn 10, Haxeltine & Prentice 1996a
