@@ -1,5 +1,5 @@
 # O2 partial pressure (Pa)
-p02 = 2.09e4
+O2 = 2.09e4
 
 # intrinsic quantum efficiency of CO2 uptake, C3 plants
 alpha_c3 = 0.08

@@ -29,49 +29,49 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     simplified by Collatz et al (1991), Collatz et al (1992),
     Haxeltine & Prentice (1996a,b) and Sitch et al. (2000)
     """
+
+    # Inhibition for low and high temperatures. High-temperature inhibition
+    # modelled by suppression of LUE by decreased relative affinity of rubisco
+    # for CO2 with increasing temperature
+    # (Table 3.7, Larcher 1983)
+    tscal = calc_temp_inhibition(temp)
+
+    # Kinetic parameters (Kc, Ko & tau) are modelled using a Q10 reln
+
     # Q10 temperature response of CO2/O2 specificity ratio
+    # units: -
     tau = lookup_Q10(0.57, 2600., temp)
 
     # Q10 temperature response of Michaelis constant for O2
+    # units: kPa
     ko = lookup_Q10(1.2, 3.0e4, temp)
 
     # Q10 temperature response of Michaelis constant for CO2
+    # units: Pa
     kc = lookup_Q10(2.1, 30.0, temp)
-
-    tscal = calc_temp_inhibition(temp)
 
     # Calculate CO2 compensation point (partial pressure)
     # Eqn 8, Haxeltine & Prentice 1996a
-    gamma_star = p.p02 / 2.0 / tau
+    # units: Pa
+    gamma_star = p.O2 / 2.0 / tau
 
-    # Intercellular partial pressure of CO2 given stomatal opening (Pa)
+    # Intercellular partial pressure of CO2 given stomatal opening
     # Eqn 7, Haxeltine & Prentice 1996a
+    # units: Pa
     pi_co2 = lambdax * co2 * c.PATMOS * c.CO2_CONV
 
     # Calculation of C1_C3, Eqn 4, Haxeltine & Prentice 1996a
-    #
-    # High-temperature inhibition modelled by suppression of LUE by decreased
-    # relative affinity of rubisco for CO2 with increasing temperature
-    # (Table 3.7, Larcher 1983)
-    #
+
     # Notes:
     # - there is an error in Eqn 4, Haxeltine & Prentice 1996a (missing
     #   2.0* in denominator) which is fixed here (see Eqn A2, Collatz
     #   et al 1991)
-    # - the explicit low temperature inhibition function has been removed
-    #   and replaced by a temperature-dependent upper limit on V_m, see
-    #   below
-    # - the reduction in maximum photosynthesis due to leaf age (phi_c)
-    #   has been removed
-    # - alpha_a, accounting for reduction in PAR utilisation efficiency
-    #   from the leaf to ecosystem level, appears in the calculation of
-    #   apar (above) instead of here
-    # - C_mass, the atomic weight of carbon, appears in the calculation
-    #   of V_m instead of here
+    # units: Pa
     c1 = (pi_co2 - gamma_star) / (pi_co2 + 2.0 * gamma_star) * p.alpha_c3
 
     # Calculation of C2_C3, Eqn 6, Haxeltine & Prentice 1996a
-    c2 = (pi_co2 - gamma_star) / (pi_co2 + kc * (1.0 + p.p02 / ko))
+    # units: Pa
+    c2 = (pi_co2 - gamma_star) / (pi_co2 + kc * (1.0 + p.O2 / ko))
 
     if vm is None:
         vm = vmax(temp, apar, c1, c2, tscal)
@@ -79,28 +79,30 @@ def photosynthesis(temp, apar, co2, lambdax, vm=None):
     # Calculation of daily leaf respiration
     # Eqn 10, Haxeltine & Prentice 1996a
     # units: g c m-2 d-1
-    rd_g = vm * p.BC3
+    Rd = vm * p.BC3
 
     # PAR-limited photosynthesis rate
     # Eqn 3, Haxeltine & Prentice 1996a
     # units: g c m-2 hr-1
-    je = c1 * tscal * apar * c.CMASS * c.CQ
+    je = c1 * tscal * apar  #* c.CMASS #* c.CQ
 
     # Rubisco-activity limited photosynthesis rate
     # Eqn 5, Haxeltine & Prentice 1996a
     # units: g c m-2 hr-1
-    jc = c2 * vm
+    jc = c2 * vm #* c.CMASS
 
     # Calculation of daily gross photosynthesis
     # Eqn 2, Haxeltine & Prentice 1996a
     # Notes: - there is an error in Eqn 2, Haxeltine & Prentice 1996a (missing
     # 			theta in 4*theta*je*jc term) which is fixed here
     # units: g c m-2 hr-1
-    a = (je + jc - \
+    A = (je + jc - \
                 np.sqrt((je + jc) * (je + jc) - 4.0 * p.theta * je * jc)) / \
                 (2.0 * p.theta)
 
-    return ( a, je, jc )
+    An = A - Rd
+
+    return ( A, An, je, jc )
 
 def vmax(temp, apar, c1, c2, tscal):
     # Calculation of non-water-stressed rubisco capacity assuming leaf nitrogen
@@ -174,7 +176,7 @@ if __name__ == "__main__":
 
     # Convert PAR to J m-2 hr-1
     par = np.mean(par.reshape(-1, 2), axis=1)
-    par *= 1800.0/par.max() * c.UMOL_TO_J * c.SEC_TO_HR
+    par *= 1800.0/par.max() #* c.SEC_TO_HR
     tair = np.mean(tair.reshape(-1, 2), axis=1)
     co2 = 400.0  # umol mol-1
 
@@ -183,11 +185,12 @@ if __name__ == "__main__":
     lambdax = lambda_max
 
     # Convert Vcmax from umol m-2 s-1 -> g m-2 d-1
-    vm = 40. * c.CMASS * c.SEC_TO_HR #c.SEC_TO_DAY
+    vm = 40. #* c.SEC_TO_HR #c.SEC_TO_DAY
 
     fpar = 0.6
 
-    a = np.zeros(len(par))
+    A = np.zeros(len(par))
+    An = np.zeros(len(par))
     je = np.zeros(len(par))
     jc = np.zeros(len(par))
 
@@ -198,10 +201,12 @@ if __name__ == "__main__":
         # Eqn 4, Haxeltine & Prentice 1996a
         apar = par[i] * fpar;
 
-        a[i], je[i], jc[i] = photosynthesis(tair[i], apar, co2, lambdax, vm)
+        (A[i], An[i],
+         je[i], jc[i]) = photosynthesis(tair[i], apar, co2, lambdax, vm)
 
-    #print(np.sum(an))
-    plt.plot(a, label="An")
+    print(np.sum(A), np.sum(An))
+    plt.plot(A, label="A")
+    #plt.plot(An, label="An")
     #plt.plot(je, label="Je")
     #plt.plot(jc, label="Jc")
     plt.legend(numpoints=1, loc="best")

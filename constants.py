@@ -1,7 +1,7 @@
-PATMOS = 1e5 # atmospheric pressure (Pa)
+PATMOS = 1e5       # atmospheric pressure (Pa)
 CO2_CONV = 1.0e-6
-K2degC = 273.15 # Kelvin to deg c conversion
-CMASS = 12.0 # atomic mass of carbon
+K2degC = 273.15    # Kelvin to deg c conversion
+CMASS = 12.0       # molar mass of carbon, g mol-1
 
 SEC_TO_HR = 3600.0
 SEC_TO_DAY = 86400.0
