@@ -17,8 +17,17 @@ __version__ = "1.0 (18.04.2019)"
 __email__   = "mdekauwe@gmail.com"
 
 
-def photosynthesis(temp, co2, lambdax):
+def photosynthesis(temp, apar, co2, day_length, lambdax):
+    """
+    Total daily gross photosynthesis
 
+    Calculation of total daily gross photosynthesis and leaf-level net daytime
+    photosynthesis given degree of stomatal closure (as parameter lambda).
+    Includes implicit scaling from leaf to plant projective area basis.
+    Adapted from Farquhar & von Caemmerer (1982) photosynthesis model, as
+    simplified by Collatz et al (1991), Collatz et al (1992),
+    Haxeltine & Prentice (1996a,b) and Sitch et al. (2000)
+    """
     # Q10 temperature response of CO2/O2 specificity ratio
     tau = lookup_Q10(0.57, 2600., temp)
 
@@ -27,6 +36,8 @@ def photosynthesis(temp, co2, lambdax):
 
     # Q10 temperature response of Michaelis constant for CO2
     kc = lookup_Q10(2.1, 30.0, temp)
+
+    tscal = calc_temp_inhibition(temp)
 
     # Calculate CO2 compensation point (partial pressure)
     # Eqn 8, Haxeltine & Prentice 1996a
@@ -61,9 +72,66 @@ def photosynthesis(temp, co2, lambdax):
     # Calculation of C2_C3, Eqn 6, Haxeltine & Prentice 1996a
     c2 = (pi_co2 - gamma_star) / (pi_co2 + kc * (1.0 + p.p02 / ko))
 
-    print(gamma_star, pi_co2, c1, c2)
+    vm = vmax(temp, apar, day_length, c1, c2, tscal)
+
+    # Calculation of daily leaf respiration
+    # Eqn 10, Haxeltine & Prentice 1996a
+    rd_g = vm * p.BC3
+
+    # PAR-limited photosynthesis rate (gC/m2/h)
+    # Eqn 3, Haxeltine & Prentice 1996a
+    je = c1 * tscal * apar * c.CMASS * c.CQ / day_length
+
+    # Rubisco-activity limited photosynthesis rate (gC/m2/h)
+    # Eqn 5, Haxeltine & Prentice 1996a
+    jc = c2 * vm / 24.0
+
+    # Calculation of daily gross photosynthesis
+    # Eqn 2, Haxeltine & Prentice 1996a
+    # Notes: - there is an error in Eqn 2, Haxeltine & Prentice 1996a (missing
+    # 			theta in 4*theta*je*jc term) which is fixed here
+    agd_g = (je + jc - \
+                np.sqrt((je + jc) * (je + jc) - 4.0 * p.theta * je * jc)) / \
+                (2.0 * p.theta) * day_length
+
+    print(agd_g)
 
 
+def vmax(temp, apar, day_length, c1, c2, tscal):
+    # Calculation of non-water-stressed rubisco capacity assuming leaf nitrogen
+    # not limiting (Eqn 11, Haxeltine & Prentice 1996a)
+    #
+    s =  24.0 / day_length * p.BC3
+
+    # Calculation of sigma is based on Eqn 12 Haxeltine & Prentice 1996a
+    sigma = np.sqrt(max(0., 1. - (c2 - s) / (c2 - p.theta * s)))
+
+    vm = 1.0 / p.BC3 * c.CMASS * c.CQ * c1 / c2 * tscal * apar *    \
+            (2. * p.theta * s * (1. - sigma) - s + c2 * sigma);
+
+    # Conversion factor in calculation of leaf nitrogen: includes conversion of:
+    #   - Vm from gC/m2/day to umolC/m2/sec
+    #   - nitrogen from mg/m2 to kg/m2
+    conv = 1.0 / (3600.0 * day_length * c.CMASS)
+
+    vm *= conv
+
+    return vm
+
+def calc_temp_inhibition(temp):
+    # Calculate temperature-inhibition coefficient
+    #
+    # This function (tscal) is mathematically identical to function tstress
+	# in LPJF. In contrast to earlier versions of modular LPJ and LPJ-GUESS,
+	# it includes both high- and low-temperature inhibition.
+    k1 = (p.pstemp_min + p.pstemp_low) / 2.
+
+    tscal = (1.0 - 0.01 * \
+             np.exp(4.6 / (p.pstemp_max - p.pstemp_high) * \
+             (temp - p.pstemp_high))) / \
+			 (1.0 + np.exp((k1 - temp) / (k1 - p.pstemp_min) * 4.6))
+
+    return tscal
 
 def lookup_Q10(q10, base25, temp):
 
@@ -88,20 +156,16 @@ def lookup_Q10(q10, base25, temp):
 
 if __name__ == "__main__":
 
-
+    day_length = 12.0
     temp = 15.0  # deg C
     co2 = 400.0  # umol mol-1
-    lambdax = 1.0
+    par = 1000.0 * (3600. * day_length) # total daily PAR today (J/m2/day)
 
-    photosynthesis(temp, co2, lambdax)
+    # ratio of intercellular to ambient partial pressure of CO2
+    lambda_max = 0.8
+    lambdax = lambda_max
 
-    """
-    xx = []
-    temps = np.arange(1, 40)
-    for t in temps:
-        xx.append(photosynthesis(t))
+    fapar = 0.6
+    apar = fapar * par
 
-    import matplotlib.pyplot as plt
-    plt.plot(temps, xx)
-    plt.show()
-    """
+    photosynthesis(temp, apar, co2, day_length, lambdax)
