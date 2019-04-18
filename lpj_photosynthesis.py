@@ -8,20 +8,27 @@ Blah, blah
 from math import exp
 import numpy as np
 import sys
+
 import parameters as p
+import constants as c
 
 __author__  = "Martin De Kauwe"
 __version__ = "1.0 (18.04.2019)"
 __email__   = "mdekauwe@gmail.com"
 
 
-def photosynthesis(temp):
+def photosynthesis(temp, co2, lambdax):
 
     # Calculate CO2 compensation point (partial pressure)
     # Eqn 8, Haxeltine & Prentice 1996a
     gamma_star = p.PO2 / 2.0 / lookup_tau(0.57, 2600., temp)
 
-    return(gamma_star)
+    # Intercellular partial pressure of CO2 given stomatal opening (Pa)
+    # Eqn 7, Haxeltine & Prentice 1996a
+    pi_co2 = lambdax * co2 * c.PATMOS * c.CO2_CONV
+
+    print(gamma_star, pi_co2)
+
 
 
 def lookup_tau(q10, base25, temp):
@@ -48,9 +55,13 @@ def lookup_tau(q10, base25, temp):
 if __name__ == "__main__":
 
 
-    temp = 15.0
-    x = photosynthesis(temp)
+    temp = 15.0  # deg C
+    co2 = 400.0  # umol mol-1
+    lambdax = 1.0
 
+    photosynthesis(temp, co2, lambdax)
+
+    """
     xx = []
     temps = np.arange(1, 40)
     for t in temps:
@@ -59,3 +70,4 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     plt.plot(temps, xx)
     plt.show()
+    """
