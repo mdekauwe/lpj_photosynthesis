@@ -97,7 +97,7 @@ def photosynthesis(temp, apar, co2, day_length, lambdax):
     # g c m-2 h-1
     agd_g = (je + jc - \
                 np.sqrt((je + jc) * (je + jc) - 4.0 * p.theta * je * jc)) / \
-                (2.0 * p.theta) * day_length
+                (2.0 * p.theta) #* day_length
 
     return agd_g
 
@@ -172,7 +172,7 @@ if __name__ == "__main__":
     (par, tair, vpd) = get_met_data(p.lat, p.lon, doy)
 
     par = np.mean(par.reshape(-1, 2), axis=1)
-    par *= 1800.0/par.max() * c.UMOL_TO_J
+    par *= 1800.0/par.max() * c.UMOL_TO_J * c.SEC_TO_HR
     tair = np.mean(tair.reshape(-1, 2), axis=1)
 
     #day_length = 12.0
