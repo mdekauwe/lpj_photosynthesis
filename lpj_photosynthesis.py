@@ -18,7 +18,7 @@ __version__ = "1.0 (18.04.2019)"
 __email__   = "mdekauwe@gmail.com"
 
 
-def photosynthesis(temp, apar, co2, day_length, lambdax):
+def photosynthesis(temp, apar, co2, day_length, lambdax, vm=None):
     """
     Total daily gross photosynthesis
 
@@ -73,10 +73,8 @@ def photosynthesis(temp, apar, co2, day_length, lambdax):
     # Calculation of C2_C3, Eqn 6, Haxeltine & Prentice 1996a
     c2 = (pi_co2 - gamma_star) / (pi_co2 + kc * (1.0 + p.p02 / ko))
 
-    #vm = vmax(temp, apar, day_length, c1, c2, tscal)
-
-    # umol m-2 s-1 -> g m-2 h-1
-    vm = 40. * c.CMASS * c.SEC_TO_HR
+    if vm is None:
+        vm = vmax(temp, apar, day_length, c1, c2, tscal)
 
     # Calculation of daily leaf respiration
     # Eqn 10, Haxeltine & Prentice 1996a
@@ -185,6 +183,10 @@ if __name__ == "__main__":
     lambda_max = 0.8
     lambdax = lambda_max
 
+
+    # umol m-2 s-1 -> g m-2 h-1
+    vm = 40. * c.CMASS * c.SEC_TO_HR
+
     fpar = 0.6
 
     # In sub-daily mode daylength should be 24h, to obtain values in daily units
@@ -197,7 +199,7 @@ if __name__ == "__main__":
         # Eqn 4, Haxeltine & Prentice 1996a
         apar = par[i] * fpar;
 
-        a[i] = photosynthesis(tair[i], apar, co2, day_length, lambdax)
+        a[i] = photosynthesis(tair[i], apar, co2, day_length, lambdax, vm)
 
     print(np.sum(a))
     plt.plot(a)
