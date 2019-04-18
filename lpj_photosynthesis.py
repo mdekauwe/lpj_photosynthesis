@@ -106,9 +106,12 @@ def vmax(temp, apar, day_length, c1, c2, tscal):
     # Calculation of sigma is based on Eqn 12 Haxeltine & Prentice 1996a
     sigma = np.sqrt(max(0., 1. - (c2 - s) / (c2 - p.theta * s)))
 
-    vm = 1.0 / p.BC3 * c.CMASS * c.CQ * c1 / c2 * tscal * apar *    \
-            (2. * p.theta * s * (1. - sigma) - s + c2 * sigma);
-
+    # maximum daily rate of net photosynthesis, g C m-2 d-1
+    arg1 = 1.0 / p.BC3
+    arg2 = c.CMASS * c.CQ * c1 / c2 * tscal * apar
+    arg3 = 2.0 * p.theta * s * (1. - sigma) - s + c2 * sigma
+    vm = arg1 * arg2 * arg3
+    
     # Conversion factor in calculation of leaf nitrogen: includes conversion of:
     #   - Vm from gC/m2/day to umolC/m2/sec
     #   - nitrogen from mg/m2 to kg/m2
@@ -165,7 +168,10 @@ if __name__ == "__main__":
     lambda_max = 0.8
     lambdax = lambda_max
 
-    fapar = 0.6
-    apar = fapar * par
+    # Scale fractional PAR absorption at plant projective area level (FPAR) to
+    # fractional absorption at leaf level (APAR)
+    # Eqn 4, Haxeltine & Prentice 1996a
+    fpar = 0.6
+    apar = par * fpar;
 
     photosynthesis(temp, apar, co2, day_length, lambdax)
