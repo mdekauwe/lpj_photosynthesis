@@ -171,6 +171,31 @@ def lookup_Q10(q10, base25, temp):
 
     return ( data[i] )
 
+def arrh(k25, Ea, Tk):
+    """ Temperature dependence of kinetic parameters is described by an
+    Arrhenius function.
+
+    Parameters:
+    ----------
+    k25 : float
+        rate parameter value at 25 degC or 298 K
+    Ea : float
+        activation energy for the parameter [J mol-1]
+    Tk : float
+        leaf temperature [deg K]
+
+    Returns:
+    -------
+    kt : float
+        temperature dependence on parameter
+
+    References:
+    -----------
+    * Medlyn et al. 2002, PCE, 25, 1167-1179.
+    """
+    return k25 * np.exp((Ea * (Tk - 298.15)) / (298.15 * c.RGAS * Tk))
+
+
 if __name__ == "__main__":
 
     from get_days_met_forcing import get_met_data
