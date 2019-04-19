@@ -61,6 +61,11 @@ def photosynthesis(Tleaf, apar, co2, lambdax, vm=None):
     #kc = p.kc25 * p.q10kc**((Tleaf - 25.0) / 10.0)
     #tau = p.tau25 * p.q10tau**((Tleaf - 25.0) / 10.0)
 
+    # Bernacchi et al. 2001, PCE
+    #kc25 = (404.9 / 1.e06) * p.patm # umol/mol
+    #ko25 = (278.4 / 1.e03) * p.patm # mmol/mol
+
+
     # Intercellular partial pressure of CO2 given stomatal opening
     # Eqn 7, Haxeltine & Prentice 1996a
     # units: Pa
