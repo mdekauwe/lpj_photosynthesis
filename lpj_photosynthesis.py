@@ -40,6 +40,7 @@ def photosynthesis(Tleaf, apar, co2, lambdax, vm=None):
     # Kinetic parameters (Kc, Ko & tau) are modelled using a Q10 reln
 
     # Q10 temperature response of CO2/O2 specificity ratio
+    # Brooks & Farquhar, 1985
     # units: -
     tau = lookup_Q10(p.q10tau, p.tau25, Tleaf)
 
@@ -63,7 +64,7 @@ def photosynthesis(Tleaf, apar, co2, lambdax, vm=None):
     # Intercellular partial pressure of CO2 given stomatal opening
     # Eqn 7, Haxeltine & Prentice 1996a
     # units: Pa
-    pi_co2 = lambdax * co2
+    pi = lambdax * co2
 
     # Calculation of C1_C3, Eqn 4, Haxeltine & Prentice 1996a
 
@@ -71,10 +72,10 @@ def photosynthesis(Tleaf, apar, co2, lambdax, vm=None):
     # - there is an error in Eqn 4, Haxeltine & Prentice 1996a (missing
     #   2.0* in denominator) which is fixed here (see Eqn A2, Collatz
     #   et al 1991)
-    c1 = (pi_co2 - gamma_star) / (pi_co2 + 2.0 * gamma_star) * p.alpha_c3
+    c1 = (pi - gamma_star) / (pi + 2.0 * gamma_star) * p.alpha_c3
 
     # Calculation of C2_C3, Eqn 6, Haxeltine & Prentice 1996a
-    c2 = (pi_co2 - gamma_star) / (pi_co2 + kc * (1.0 + p.O2 / ko))
+    c2 = (pi - gamma_star) / (pi + kc * (1.0 + p.O2 / ko))
 
     if vm is None:
         vm = vmax(Tleaf, apar, c1, c2, tscal)
