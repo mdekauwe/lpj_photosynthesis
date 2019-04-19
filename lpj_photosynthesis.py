@@ -81,30 +81,30 @@ def photosynthesis(Tleaf, apar, co2, lambdax, vm=None):
 
     # Daily leaf respiration
     # Eqn 10, Haxeltine & Prentice 1996a
-    # units: mol m-2 s-1
+    # units: mol CO2 m-2 s-1
     Rd = vm * p.BC3
 
     # PAR-limited photosynthesis rate
     # Eqn 3, Haxeltine & Prentice 1996a
-    # units: mol m-2 s-1
+    # units: mol CO2 m-2 s-1
     je = c1 * tscal * apar
 
     # Rubisco-activity limited photosynthesis rate
     # Eqn 5, Haxeltine & Prentice 1996a
-    # units: mol m-2 s-1
+    # units: mol CO2 m-2 s-1
     jc = c2 * vm
 
     # Gross photosynthesis, A
     # Eqn 2, Haxeltine & Prentice 1996a
     # Notes: - there is an error in Eqn 2, Haxeltine & Prentice 1996a (missing
     # 			theta in 4*theta*je*jc term) which is fixed here
-    # units: mol m-2 s-1
+    # units: mol CO2 m-2 s-1
     A = (je + jc - \
             np.sqrt((je + jc) * (je + jc) - 4.0 * p.theta * je * jc)) / \
             (2.0 * p.theta)
 
     # Net photosynthesis, An
-    # units: mol m-2 s-1
+    # units: mol CO2 m-2 s-1
     An = A - Rd
 
     return An * c.MOL_TO_UMOL
