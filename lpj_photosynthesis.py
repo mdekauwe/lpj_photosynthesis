@@ -233,7 +233,8 @@ if __name__ == "__main__":
         # Scale fractional PAR absorption at plant projective area level (FPAR)
         # to fractional absorption at leaf level (APAR)
         # Eqn 4, Haxeltine & Prentice 1996a
-        apar = (par[i] * c.UMOL_TO_MOL) * fpar
+        # units: mol m-2 s-1
+        apar = (par[i] * c.UMOL_TO_MOL) * fpar * p.alpha_a
 
         An[i] = photosynthesis(tair[i], apar, co2, lambdax, vm)
 

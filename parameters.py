@@ -25,6 +25,10 @@ LAI = 1.5
 # light extinction coefficient
 k = 0.5
 
+# scaling factor for PAR absorption from leaf to plant projective area level
+# alias "twigloss". Should normally be in the range 0-1
+alpha_a = 0.45
+
 ko25 = 3.0e4   # value of ko at 25 deg C
 kc25 = 30.0    # value of kc at 25 deg C
 tau25 = 2600.0 # value of tau at 25 deg C
