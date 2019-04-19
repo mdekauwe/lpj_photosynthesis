@@ -83,33 +83,33 @@ def photosynthesis(Tleaf, apar, co2, lambdax, vm=None):
 
     # Daily leaf respiration
     # Eqn 10, Haxeltine & Prentice 1996a
-    # units: umol m-2 s-1
+    # units: mol m-2 s-1
     Rd = vm * p.BC3
 
     # PAR-limited photosynthesis rate
     # Eqn 3, Haxeltine & Prentice 1996a
-    # units: umol m-2 s-1
-    je = c1 * (p.patm * c.CO2_CONV) * tscal * apar
+    # units: mol m-2 s-1
+    je = c1 * tscal * apar
 
     # Rubisco-activity limited photosynthesis rate
     # Eqn 5, Haxeltine & Prentice 1996a
-    # units: umol m-2 s-1
-    jc = c2 * (p.patm * c.CO2_CONV) * vm
+    # units: mol m-2 s-1
+    jc = c2 * vm
 
     # Gross photosynthesis, A
     # Eqn 2, Haxeltine & Prentice 1996a
     # Notes: - there is an error in Eqn 2, Haxeltine & Prentice 1996a (missing
     # 			theta in 4*theta*je*jc term) which is fixed here
-    # units: umol m-2 s-1
+    # units: mol m-2 s-1
     A = (je + jc - \
             np.sqrt((je + jc) * (je + jc) - 4.0 * p.theta * je * jc)) / \
             (2.0 * p.theta)
 
     # Net photosynthesis, An
-    # units: umol m-2 s-1
+    # units: mol m-2 s-1
     An = A - Rd
 
-    return An
+    return An * c.MOL_TO_UMOL
 
 def vmax(temp, apar, c1, c2, tscal):
     # Calculation of non-water-stressed rubisco capacity assuming leaf nitrogen
@@ -218,8 +218,8 @@ if __name__ == "__main__":
     # Ratio of intercellular to ambient partial pressure of CO2
     lambdax = p.lambda_max
 
-    # Convert Vcmax from umol m-2 s-1 -> g m-2 d-1
-    vm = 60. #* c.SEC_TO_HR #c.SEC_TO_DAY
+    # Convert Vcmax mol m-2 s-1
+    vm = 60. * c.UMOL_TO_MOL
 
     fpar = 1.0 - np.exp(-p.k * p.LAI)
 
@@ -233,7 +233,7 @@ if __name__ == "__main__":
         # Scale fractional PAR absorption at plant projective area level (FPAR)
         # to fractional absorption at leaf level (APAR)
         # Eqn 4, Haxeltine & Prentice 1996a
-        apar = par[i] * fpar
+        apar = (par[i] * c.UMOL_TO_MOL) * fpar
 
         An[i] = photosynthesis(tair[i], apar, co2, lambdax, vm)
 
