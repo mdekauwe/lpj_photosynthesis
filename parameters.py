@@ -1,8 +1,9 @@
 lat = -23.575001
 lon = 152.524994
 
-# O2 partial pressure (Pa)
-O2 = 2.09e3#2.09e4
+# O2 partial pressure (kPa)
+#O2 = 2.09e3#2.09e4
+O2 = 20.9 
 
 # atmospheric pressure (Pa)
 patm = 1e5
