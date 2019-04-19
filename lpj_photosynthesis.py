@@ -206,7 +206,6 @@ if __name__ == "__main__":
     doy = 180.
     (par, tair, vpd) = get_met_data(p.lat, p.lon, doy)
 
-    # Convert PAR to J m-2 hr-1
     #par = np.mean(par.reshape(-1, 2), axis=1)
     #par *= 1800.0/par.max() #* c.SEC_TO_HR
     #tair = np.mean(tair.reshape(-1, 2), axis=1)
