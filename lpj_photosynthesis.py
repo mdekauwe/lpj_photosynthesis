@@ -71,11 +71,9 @@ def photosynthesis(Tleaf, apar, co2, lambdax, vm=None):
     # - there is an error in Eqn 4, Haxeltine & Prentice 1996a (missing
     #   2.0* in denominator) which is fixed here (see Eqn A2, Collatz
     #   et al 1991)
-    # units: Pa
     c1 = (pi_co2 - gamma_star) / (pi_co2 + 2.0 * gamma_star) * p.alpha_c3
 
     # Calculation of C2_C3, Eqn 6, Haxeltine & Prentice 1996a
-    # units: Pa
     c2 = (pi_co2 - gamma_star) / (pi_co2 + kc * (1.0 + p.O2 / ko))
 
     if vm is None:
