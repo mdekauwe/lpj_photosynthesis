@@ -7,7 +7,7 @@ O2 = 2.09e3#2.09e4
 # atmospheric pressure (Pa)
 patm = 1e5
 
-# intrinsic quantum efficiency of CO2 uptake, C3 plants
+# intrinsic quantum efficiency of CO2 uptake, C3 plants, mol CO2/mol photons
 alpha_c3 = 0.08
 
 # leaf respiration as fraction of maximum rubisco, C3 plants
